@@ -1,4 +1,5 @@
 const express = require('express');
+const helmet = require('helmet');
 const uuid = require('uuid');
 const SocketIO = require('socket.io');
 
@@ -18,9 +19,10 @@ function find_friend_in_lobby (lobby) {
 
 const app = express();
 
-app.use(express.static('./client/dist'));
+app.use(helmet());
+app.use(express.static('./dist/client'));
 
-const http = app.listen(proccess.env.PORT || 5000);
+const http = app.listen(process.env.PORT || 5000);
 
 const io = SocketIO(http);
 
