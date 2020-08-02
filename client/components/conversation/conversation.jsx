@@ -1,4 +1,4 @@
-import React from 'React';
+import React from 'react';
 import { Messages } from '../messages/messages';
 import { ConversationFooter } from '../conversation-footer/conversation-footer';
 
