@@ -1,5 +1,6 @@
 const express = require('express');
 const helmet = require('helmet');
+const compression = require('compression');
 const uuid = require('uuid');
 const SocketIO = require('socket.io');
 
@@ -20,6 +21,11 @@ function find_friend_in_lobby (lobby) {
 const app = express();
 
 app.use(helmet());
+
+app.use(compression({
+    level: 9
+}));
+
 app.use(express.static('./dist/client'));
 
 const http = app.listen(process.env.PORT || 5000);
