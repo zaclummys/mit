@@ -1,0 +1,15 @@
+@import 'normalize.css';
+
+html {
+    font-family: Roboto, Helvetica Neue, sans-serif;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+input, button {
+    outline: none;
+}
+
+*, :after, :before {
+    box-sizing: inherit;
+}

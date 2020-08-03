@@ -3,6 +3,16 @@
     margin: 0;
 }
 
-.text {
+.input {
+    height: 36px;
+    padding: 0 8px;
+    margin: 0 8px;
     flex: auto;
+    background-color: #eee;
+    border: none;
+    border-radius: 2px;
+}
+
+.input:focus {
+    background-color: #ddd;
 }

@@ -1,6 +1,9 @@
 import React from 'react';
 import SocketIO from 'socket.io-client';
 
+import HeaderStyle from './header.css';
+
+import { Alert } from '../alert/alert';
 import { LobbyController } from '../lobby/lobby';
 import { ConversationController } from '../conversation/conversation';
 
@@ -45,29 +48,41 @@ export default class App extends React.Component {
         this.setRoute(LOBBY);
     }
 
-    handleLeaveConversationButtonClick () {
+    handleLeaveConversation () {
         this.leaveConversation();
+    }
+
+    handleMatch () {
+        this.enterConversation();
     }
 
     view () {
         if (this.state.socket == null) {
-            return <div>Connecting...</div>;
+            return <Alert>Connecting...</Alert>;
         }
 
         if (this.state.route == LOBBY) {
             return <LobbyController
                 socket={ this.state.socket }
-                actionEnterConversation={() => this.enterConversation()} />;
+                onMatch={() => this.handleMatch()} />;
         }
 
         if (this.state.route == CONVERSATION) {
             return <ConversationController
                     socket={ this.state.socket }
-                    onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick()} />;
+                    onLeaveConversation={() => this.handleLeaveConversation()} />;
         }
     }
 
     render () {
-        return this.view();
+        return (
+            <div>
+                <div className={ HeaderStyle.header }>
+                    <div className={ HeaderStyle.title }>Mit</div>
+                </div>
+
+                { this.view() }
+            </div>
+        );
     }
 }

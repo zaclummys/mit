@@ -1,4 +1,5 @@
 import React from 'react';
+import ConversationStyle from './conversation.css';
 import { Messages } from '../messages/messages';
 import { ConversationFooter } from '../conversation-footer/conversation-footer';
 
@@ -9,15 +10,22 @@ export class ConversationController extends React.Component {
     constructor () {
         super();
 
-        this.textMessageListener = message => {
+        this.handleSocketTextMessage = message => {
             this.addTextMessage({
                 side: LEFT,
                 message: message,
             });
         };
 
+        this.handleSocketLeave = () => {
+            this.setState({
+                alone: true
+            });
+        };
+
         this.state = {
             messages: [],
+            alone: false,
         };        
     };
     
@@ -26,11 +34,17 @@ export class ConversationController extends React.Component {
     }       
 
     componentDidMount () {
-        this.socket.on('conversation:text-message', this.textMessageListener);
+        this.socket.on('conversation:text-message', this.handleSocketTextMessage);
+        this.socket.on('conversation:leave', this.handleSocketLeave);
     }
 
     componentWillUnmount () {
-        this.socket.off('conversation:text-message', this.textMessageListener);
+        this.socket.off('conversation:text-message', this.handleSocketTextMessage);
+        this.socket.off('conversation:leave', this.handleSocketLeave);
+    }
+
+    componentDidUpdate () {
+        document.documentElement.scrollTop = document.documentElement.scrollHeight;
     }
 
     setMessagesWith (f) {
@@ -60,12 +74,15 @@ export class ConversationController extends React.Component {
     }
 
     handleLeaveConversationButtonClick () {
-        this.props.onLeaveConversationButtonClick();
+        this.socket.emit('conversation:leave');
+
+        this.props.onLeaveConversation();
     }
 
     render () {
         return <ConversationView
             messages={ this.state.messages }
+            alone={ this.state.alone }
             onTextMessageFormSubmit={message => this.handleTextMessageFormSubmit(message)}
             onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick()} />
     }
@@ -83,7 +100,15 @@ export class ConversationView extends React.Component {
     render () { 
         return (
             <div>
-                <Messages messages={ this.props.messages } />
+                <div className={ ConversationStyle.main }>
+                    <Messages messages={ this.props.messages } />
+
+                    { this.props.alone && (
+                        <div className={ ConversationStyle.alone }>
+                            Your friend left conversation.
+                        </div>
+                    )}
+                </div>
 
                 <ConversationFooter
                     onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick()}

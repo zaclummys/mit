@@ -10,7 +10,7 @@
     "dependencies": {
         "compression": "^1.7.4",
         "helmet": "^4.0.0",
-        "express": "^4.17.1",        
+        "express": "^4.17.1",
         "jsonwebtoken": "^8.5.1",
         "socket.io": "^2.3.0",
         "uuid": "^7.0.0"
@@ -18,7 +18,9 @@
     "devDependencies": {
         "autoprefixer": "^8.0.0",
         "cssnano": "^4.1.10",
+        "normalize.css": "^8.0.1",
         "parcel": "^1.12.4",
+        "postcss-import": "^12.0.1",
         "postcss-modules": "^3.2.0",
         "react": "^16.13.1",
         "react-dom": "^16.13.1",

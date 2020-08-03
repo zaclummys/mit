@@ -1,14 +1,17 @@
-.container {
+.message {
     display: block;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 2px;
 }
 
-.container[data-side="left"] {
+.message[data-side="left"] {
     color: white;
     background-color: blue;
     align-self: flex-start;
 }
 
-.container[data-side="right"] {
+.message[data-side="right"] {
     color: white;
     background-color: red;
     align-self: flex-end;

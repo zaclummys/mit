@@ -17,7 +17,7 @@ import TextMessageStyle from './text-message.css';
 
 export function TextMessage ({ side, text }) {
     return (
-        <div className={ TextMessageStyle.container } data-side={ side }>
+        <div className={ TextMessageStyle.message } data-side={ side }>
             { text }
         </div>
     );

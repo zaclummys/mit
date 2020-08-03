@@ -1,6 +1,7 @@
 import React from 'react';
-
 import TextMessageFormStyle from './text-message-form.css';
+
+import { Button } from '../button/button';
 
 export class TextMessageFormController extends React.Component {
     constructor () {
@@ -60,13 +61,13 @@ export class TextMessageFormView extends React.Component {
     render () {
         return (
             <form className={ TextMessageFormStyle.form } onSubmit={event => this.handleFormSubmit(event)}>
-                <TextMessageInput value={ this.props.text } onChange={event => this.handleInputChange(event)} />
-                <input type="submit" value="Send" />
+                <TextMessageInput hint="Write your message..." value={ this.props.text } onChange={event => this.handleInputChange(event)} />
+                <Button type="submit">SEND</Button>
             </form>
         );
     }
 }
 
-function TextMessageInput ({ value, onChange }) {
-    return <input required type="text" className={ TextMessageFormStyle.text } value={ value } onChange={ onChange } />;
+function TextMessageInput ({ hint, value, onChange }) {
+    return <input required type="text" className={ TextMessageFormStyle.input } value={ value } placeholder={ hint } onChange={ onChange } />;
 }

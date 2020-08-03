@@ -20,22 +20,30 @@ function find_friend_in_lobby (lobby) {
 
 const app = express();
 
-app.use(helmet());
-
-app.use(compression({
-    level: 9
-}));
-
+// app.use(helmet());
+app.use(compression());
 app.use(express.static('./dist/client'));
 
 const http = app.listen(process.env.PORT || 5000);
 
-const io = SocketIO(http);
+const io = SocketIO(http, {
+    cookie: false
+});
 
 const lobby = [];
 
 io.on('connection', socket => {
     socket.conversation = null;
+
+    function leave () {
+        const conversation = socket.conversation;
+
+        socket.to(conversation).emit('conversation:leave');
+
+        socket.leave(conversation);
+
+        socket.conversation = null;
+    }
 
     socket.on('global:lobby', () => {
         // Client must leave conversation to match again
@@ -71,9 +79,7 @@ io.on('connection', socket => {
         socket.to(socket.conversation).emit('conversation:text-message', message);
     });
 
-    socket.on('conversation:leave', () => {
-        socket.leave(socket.conversation);
+    socket.on('conversation:leave', leave);
 
-        socket.conversation = null;
-    });
+    socket.on('disconnect', leave);
 });

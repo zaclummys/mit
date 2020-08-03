@@ -1,20 +1,27 @@
 import React from 'react';
+import { Alert } from '../alert/alert';
 
 export class LobbyController extends React.Component {
+    constructor () {
+        super();
+
+        this.handleSocketMatch = () => {
+            this.props.onMatch();
+        };
+    }
+
     get socket () {
         return this.props.socket;
     }
 
-    get actionEnterConversation () {
-        return this.props.actionEnterConversation;
-    }
-
     componentDidMount () {    
-        this.socket.once('global:match', () => {
-            this.actionEnterConversation();
-        });
+        this.socket.once('global:match', this.handleSocketMatch);
 
         this.socket.emit('global:lobby');
+    }
+
+    componentWillUnmount () {
+        this.socket.off('global:match', this.handleSocketMatch);
     }
 
     render () {
@@ -25,7 +32,9 @@ export class LobbyController extends React.Component {
 export class LobbyView extends React.Component {
     render () {
         return (
-            <div>You are waiting for a friend...</div>
+            <Alert>
+                You are waiting for a friend...
+            </Alert>
         );
     }
 }
