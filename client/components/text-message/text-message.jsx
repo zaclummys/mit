@@ -18,7 +18,7 @@ import TextMessageStyle from './text-message.css';
 export function TextMessage ({ side, text }) {
     return (
         <div className={ TextMessageStyle.message } data-side={ side }>
-            { text }
+            <span>{ text }</span>
         </div>
     );
 }

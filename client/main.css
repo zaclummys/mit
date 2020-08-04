@@ -1,13 +1,18 @@
 @import 'normalize.css';
 
 html {
+    background-color: #fefefe;
+
     font-family: Roboto, Helvetica Neue, sans-serif;
     font-size: 14px;
-    box-sizing: border-box;
 }
 
 input, button {
     outline: none;
+}
+
+html {
+    box-sizing: border-box;
 }
 
 *, :after, :before {

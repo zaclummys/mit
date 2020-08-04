@@ -60,9 +60,11 @@ export class TextMessageFormView extends React.Component {
 
     render () {
         return (
-            <form className={ TextMessageFormStyle.form } onSubmit={event => this.handleFormSubmit(event)}>
-                <TextMessageInput hint="Write your message..." value={ this.props.text } onChange={event => this.handleInputChange(event)} />
-                <Button type="submit">SEND</Button>
+            <form onSubmit={event => this.handleFormSubmit(event)}>
+                <div className={ TextMessageFormStyle.form }>
+                    <TextMessageInput hint="Write your message..." value={ this.props.text } onChange={event => this.handleInputChange(event)} />
+                    <Button primary type="submit">SEND</Button>
+                </div>
             </form>
         );
     }

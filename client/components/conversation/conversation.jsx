@@ -1,5 +1,7 @@
 import React from 'react';
 import ConversationStyle from './conversation.css';
+
+import { Alert } from '../alert/alert';
 import { Messages } from '../messages/messages';
 import { ConversationFooter } from '../conversation-footer/conversation-footer';
 
@@ -19,13 +21,20 @@ export class ConversationController extends React.Component {
 
         this.handleSocketLeave = () => {
             this.setState({
-                alone: true
+                didFriendLeave: true
+            });
+        };
+
+        this.handleSocketDisconnect = () => {
+            this.setState({
+                didFriendDisconnect: true
             });
         };
 
         this.state = {
             messages: [],
-            alone: false,
+            didFriendLeave: false,
+            didFriendDisconnect: false,
         };        
     };
     
@@ -36,11 +45,13 @@ export class ConversationController extends React.Component {
     componentDidMount () {
         this.socket.on('conversation:text-message', this.handleSocketTextMessage);
         this.socket.on('conversation:leave', this.handleSocketLeave);
+        this.socket.on('conversation:disconnect', this.handleSocketDisconnect);
     }
 
     componentWillUnmount () {
         this.socket.off('conversation:text-message', this.handleSocketTextMessage);
         this.socket.off('conversation:leave', this.handleSocketLeave);
+        this.socket.off('conversation:disconnect', this.handleSocketDisconnect);
     }
 
     componentDidUpdate () {
@@ -69,51 +80,62 @@ export class ConversationController extends React.Component {
         this.socket.emit('conversation:text-message', message);
     }
 
+    shouldConfirmLeaveConversation () {
+        if (this.state.didFriendLeave == false && this.state.didFriendDisconnect == false) {
+            return true;
+        }
+
+        return false;
+    }
+
+    confirmLeaveConversation () {
+        if (this.shouldConfirmLeaveConversation()) {
+            return window.confirm('Are you sure you want to return to lobby?');
+        }
+
+        return true;
+    }
+
     handleTextMessageFormSubmit (message) {
         this.sendTextMessage(message);
     }
 
     handleLeaveConversationButtonClick () {
-        this.socket.emit('conversation:leave');
+        const confirmed = this.confirmLeaveConversation();
 
-        this.props.onLeaveConversation();
+        if (confirmed) {
+            this.socket.emit('conversation:leave');
+    
+            this.props.onLeaveConversation();
+        }
     }
 
     render () {
         return <ConversationView
             messages={ this.state.messages }
-            alone={ this.state.alone }
+            didFriendLeave={ this.state.didFriendLeave }
+            didFriendDisconnect={ this.state.didFriendDisconnect }
             onTextMessageFormSubmit={message => this.handleTextMessageFormSubmit(message)}
             onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick()} />
     }
 }
 
-export class ConversationView extends React.Component {
-    handleLeaveConversationButtonClick () {
-        this.props.onLeaveConversationButtonClick();
-    }
+export function ConversationView ({ messages, didFriendLeave, didFriendDisconnect, onLeaveConversationButtonClick, onTextMessageFormSubmit }) {
+    return (
+        <div>
+            <div className={ ConversationStyle.main }>
+                <Alert>Say hello to your friend!</Alert>
 
-    handleTextMessageFormSubmit (message) {
-        this.props.onTextMessageFormSubmit(message);
-    }
+                <Messages messages={ messages } />
 
-    render () { 
-        return (
-            <div>
-                <div className={ ConversationStyle.main }>
-                    <Messages messages={ this.props.messages } />
-
-                    { this.props.alone && (
-                        <div className={ ConversationStyle.alone }>
-                            Your friend left conversation.
-                        </div>
-                    )}
-                </div>
-
-                <ConversationFooter
-                    onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick()}
-                    onTextMessageFormSubmit={message => this.handleTextMessageFormSubmit(message)} />
+                { didFriendLeave && <Alert>Your friend has left conversation.</Alert> }
+                { didFriendDisconnect && <Alert>Your friend has disconnected.</Alert> }
             </div>
-        );
-    }
+
+            <ConversationFooter
+                showOnlyLeaveButton={ didFriendLeave || didFriendDisconnect }
+                onLeaveConversationButtonClick={() => onLeaveConversationButtonClick()}
+                onTextMessageFormSubmit={message => onTextMessageFormSubmit(message)} />
+        </div>
+    );
 }

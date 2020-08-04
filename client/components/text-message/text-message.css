@@ -7,12 +7,16 @@
 
 .message[data-side="left"] {
     color: white;
-    background-color: blue;
+    background-color: #5bcb15;
     align-self: flex-start;
 }
 
 .message[data-side="right"] {
     color: white;
-    background-color: red;
+    background-color: #c20000;
     align-self: flex-end;
+}
+
+.message span {
+    word-break: break-all;
 }

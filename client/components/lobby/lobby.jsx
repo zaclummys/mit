@@ -6,7 +6,10 @@ export class LobbyController extends React.Component {
         super();
 
         this.handleSocketMatch = () => {
-            this.props.onMatch();
+            // Add a delay to improve user experience
+            setTimeout(() => {
+                this.props.onMatch();
+            }, 500);
         };
     }
 
@@ -15,7 +18,7 @@ export class LobbyController extends React.Component {
     }
 
     componentDidMount () {    
-        this.socket.once('global:match', this.handleSocketMatch);
+        this.socket.on('global:match', this.handleSocketMatch);
 
         this.socket.emit('global:lobby');
     }
@@ -32,9 +35,7 @@ export class LobbyController extends React.Component {
 export class LobbyView extends React.Component {
     render () {
         return (
-            <Alert>
-                You are waiting for a friend...
-            </Alert>
+            <Alert>You're waiting for a friend...</Alert>
         );
     }
 }
