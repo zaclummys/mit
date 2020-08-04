@@ -8,7 +8,7 @@ export class LobbyController extends React.Component {
         this.handleSocketMatch = () => {
             // Add a delay to improve user experience
             setTimeout(() => {
-                this.props.onMatch();
+                this.actionEnterConversation();
             }, 500);
         };
     }
@@ -25,6 +25,10 @@ export class LobbyController extends React.Component {
 
     componentWillUnmount () {
         this.socket.off('global:match', this.handleSocketMatch);
+    }
+
+    actionEnterConversation () {
+        this.props.actionEnterConversation();
     }
 
     render () {

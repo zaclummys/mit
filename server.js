@@ -24,10 +24,25 @@ const lobby = new Lobby();
 
 ws.on('connection', socket => {
     socket.conversation = null;
+    
+    function leave () {        
+        if (socket.conversation == null) {
+            return;
+        }
+
+        // Emit leave notification
+        socket.to(socket.conversation).emit('conversation:leave');
+
+        // Leave conversation
+        socket.leave(socket.conversation);
+
+        // Clear conversation
+        socket.conversation = null;        
+    }
 
     socket.on('global:lobby', () => {
         if (socket.conversation) {
-            return;
+            leave();
         }
 
         const friend = lobby.match();
@@ -49,27 +64,27 @@ ws.on('connection', socket => {
         }        
     });
 
-    socket.on('conversation:text-message', ({ text }) => {
-        if (socket.conversation) {
-            socket.to(socket.conversation).emit('conversation:text-message', { text });
-        }
-    });
-
-    socket.on('conversation:leave', () => {
-        if (socket.conversation) {
-            // Emit leave notification
-            socket.to(socket.conversation).emit('conversation:leave');
-
-            // Leave conversation
-            socket.leave(socket.conversation);
+    socket.on('conversation:text-message', message => {
+        if (socket.conversation == null) {
+            return;
         }
 
-        socket.conversation = null;
+        if (message == null) {
+            return;
+        }
+
+        socket.to(socket.conversation).emit('conversation:text-message', {
+            text: message.text,
+        });
     });
+
+    socket.on('conversation:leave', leave);
 
     socket.on('disconnect', () => {
-        if (socket.conversation) {
-            socket.to(socket.conversation).emit('conversation:disconnect');
+        if (socket.conversation == null) {
+            return;
         }
+
+        socket.to(socket.conversation).emit('conversation:disconnect');
     });
 });

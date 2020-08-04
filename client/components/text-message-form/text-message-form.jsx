@@ -2,6 +2,7 @@ import React from 'react';
 import TextMessageFormStyle from './text-message-form.css';
 
 import { Button } from '../button/button';
+import { Input } from '../input/input';
 
 export class TextMessageFormController extends React.Component {
     constructor () {
@@ -13,7 +14,9 @@ export class TextMessageFormController extends React.Component {
     }
 
     clear () {
-        this.setText('');
+        this.setState({
+            text: ''
+        });
     }
 
     setText (text) {
@@ -33,12 +36,14 @@ export class TextMessageFormController extends React.Component {
         const text = this.state.text.trim();
 
         if (text) {
-            this.props.onFormSubmit({
-                text
-            });
+            this.actionSendTextMessage({ text });
 
             this.clear();
         }
+    }
+
+    actionSendTextMessage (message) {
+        this.props.actionSendTextMessage(message);
     }
 
     render () {
@@ -62,14 +67,10 @@ export class TextMessageFormView extends React.Component {
         return (
             <form onSubmit={event => this.handleFormSubmit(event)}>
                 <div className={ TextMessageFormStyle.form }>
-                    <TextMessageInput hint="Write your message..." value={ this.props.text } onChange={event => this.handleInputChange(event)} />
+                    <Input required type="text" hint="Write your message..." value={ this.props.text } onChange={event => this.handleInputChange(event)} />
                     <Button primary type="submit">SEND</Button>
                 </div>
             </form>
         );
     }
-}
-
-function TextMessageInput ({ hint, value, onChange }) {
-    return <input required type="text" className={ TextMessageFormStyle.input } value={ value } placeholder={ hint } onChange={ onChange } />;
 }

@@ -1,6 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import App from './components/app/app';
+import { AppController } from './components/app/app';
 
-ReactDOM.render(<App />, document.getElementById("app"));
+ReactDOM.render(
+    <React.StrictMode>
+        <AppController />
+    </React.StrictMode>,
+    document.getElementById("app"),
+);

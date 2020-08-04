@@ -1,24 +1,26 @@
 import React from 'react';
 import TextMessageStyle from './text-message.css';
 
-// function computeContainerClassName (side) {
-//     let className = TextMessageStyle.container;
+function computeMessageClassName ({ side }) {
+    let className = TextMessageStyle.message;
 
-//     if (side == 'left') {
-//         className += ' ' + TextMessageStyle.left;
-//     }
+    if (side == 'left') {
+        className += ' ' + TextMessageStyle.left;
+    }
 
-//     if (side == 'right') {
-//         className += ' ' + TextMessageStyle.right;
-//     }
+    if (side == 'right') {
+        className += ' ' + TextMessageStyle.right;
+    }
 
-//     return className;
-// };
+    return className;
+};
 
 export function TextMessage ({ side, text }) {
+    let className = computeMessageClassName({ side });
+
     return (
-        <div className={ TextMessageStyle.message } data-side={ side }>
-            <span>{ text }</span>
+        <div className={ className }>
+            { text }
         </div>
     );
 }

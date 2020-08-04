@@ -1,22 +1,19 @@
 .message {
     display: block;
     padding: 8px;
-    margin-bottom: 8px;
+    margin: 4px 0;
     border-radius: 2px;
+    word-break: break-all;
 }
 
-.message[data-side="left"] {
+.left {
     color: white;
     background-color: #5bcb15;
     align-self: flex-start;
 }
 
-.message[data-side="right"] {
+.right {
     color: white;
     background-color: #c20000;
     align-self: flex-end;
-}
-
-.message span {
-    word-break: break-all;
 }
