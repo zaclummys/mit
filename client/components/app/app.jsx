@@ -18,11 +18,13 @@ export class AppController extends React.Component {
     }
 
     componentDidMount () {
-        const socket = SocketIO();
+        setTimeout(() => {
+            const socket = SocketIO();
 
-        socket.once('connect', () => {
-            this.setSocket(socket);
-        });
+            socket.once('connect', () => {
+                this.setSocket(socket);
+            });
+        }, 0);
     }
 
     setSocket (socket) {

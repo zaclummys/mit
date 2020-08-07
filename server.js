@@ -17,7 +17,9 @@ app.use(express.static('./dist/client'));
 
 const server = app.listen(process.env.PORT || 5000);
 
-const sio = SocketIO(server);
+const sio = SocketIO(server, {
+    cookie: false
+});
 
 if (process.env.NODE_ENV == 'production') {
     const redis = require('socket.io-redis');
