@@ -1,22 +1,19 @@
 const uuid = require('uuid');
 const SocketIO = require('socket.io');
 const express = require('express');
+const helmet = require('helmet');
+const compression = require('compression');
 
 const Lobby = require('./lib/lobby');
 
 const app = express();
 
+app.use(helmet());
+app.use(compression({
+    level: 9
+}));
+
 app.use(express.static('./dist/client'));
-
-if (process.env.NODE_ENV == 'production') {
-    const helmet = require('helmet');
-    const compression = require('compression');
-
-    app.use(helmet());
-    app.use(compression({
-        level: 9
-    }));
-}
 
 const server = app.listen(process.env.PORT || 5000);
 
