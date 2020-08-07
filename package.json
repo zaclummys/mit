@@ -3,7 +3,7 @@
     "scripts": {
         "start": "node server.js",
         "watch": "parcel watch ./client/index.html -d ./dist/client",
-        "build": "parcel build ./client/index.html -d ./dist/client --no-source-maps"
+        "build": "parcel build ./client/index.html -d ./dist/client --no-source-maps --experimental-scope-hoisting"
     },
     "engines": {
         "node": "^13.0.0"
