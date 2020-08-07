@@ -1,21 +1,5 @@
 @import 'normalize.css';
 
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 400;
-    font-display: swap;
-    src: local('Roboto'), local('Roboto-Regular'), url('./fonts/roboto-400.woff2') format('woff2');
-}
-
-@font-face {
-    font-family: 'Roboto';
-    font-style: normal;
-    font-weight: 500;
-    font-display: swap;
-    src: local('Roboto Medium'), local('Roboto-Medium'), url('./fonts/roboto-500.woff2') format('woff2');
-}
-
 html {
     font-family: Roboto, Helvetica Neue, sans-serif;
     font-size: 14px;
