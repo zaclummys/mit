@@ -1,10 +1,13 @@
 .footer {
     position: fixed;
-    margin: 8px;
-
+    padding: 8px;
+    
     bottom: 0;
     left: 0;
     right: 0;
+    
+    margin: 0 auto;
+    max-width: 768px;
 }
 
 .footer .regular {

@@ -1,28 +1,38 @@
+const uuid = require('uuid');
 const SocketIO = require('socket.io');
 const express = require('express');
-const helmet = require('helmet');
-const compression = require('compression');
-const uuid = require('uuid');
 
 const Lobby = require('./lib/lobby');
 
 const app = express();
 
-app.use(helmet());
-
-app.use(compression({
-    level: 9
-}));
-
 app.use(express.static('./dist/client'));
+
+if (process.env.NODE_ENV == 'production') {
+    const helmet = require('helmet');
+    const compression = require('compression');
+
+    app.use(helmet());
+    app.use(compression({
+        level: 9
+    }));
+}
 
 const server = app.listen(process.env.PORT || 5000);
 
-const ws = SocketIO(server);
+const sio = SocketIO(server);
+
+if (process.env.NODE_ENV == 'production') {
+    const redis = require('socket.io-redis');
+
+    sio.adapter(
+        redis(process.env.REDIS_URL)
+    );
+}
 
 const lobby = new Lobby();
 
-ws.on('connection', socket => {
+sio.on('connection', socket => {
     socket.conversation = null;
     
     function leave () {        
@@ -42,7 +52,7 @@ ws.on('connection', socket => {
 
     socket.on('global:lobby', () => {
         if (socket.conversation) {
-            leave();
+            return;
         }
 
         const friend = lobby.match();
@@ -79,12 +89,4 @@ ws.on('connection', socket => {
     });
 
     socket.on('conversation:leave', leave);
-
-    socket.on('disconnect', () => {
-        if (socket.conversation == null) {
-            return;
-        }
-
-        socket.to(socket.conversation).emit('conversation:disconnect');
-    });
 });

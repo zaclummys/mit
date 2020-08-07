@@ -1,15 +1,15 @@
 import React from 'react';
 import SocketIO from 'socket.io-client';
 
-import HeaderStyle from './header.css';
-
 import { Alert } from '../alert/alert';
+import { Header } from '../header/header';
 import { LobbyController } from '../lobby/lobby';
 import { ConversationController } from '../conversation/conversation';
 
 export class AppController extends React.Component {
     constructor () {
         super();
+
 
         this.state = {
             socket: null,
@@ -20,7 +20,7 @@ export class AppController extends React.Component {
     componentDidMount () {
         const socket = SocketIO();
 
-        socket.on('connect', () => {
+        socket.once('connect', () => {
             this.setSocket(socket);
         });
     }
@@ -74,10 +74,8 @@ export function AppView ({
 }) {
     return (
         <div>
-            <div className={ HeaderStyle.header }>
-                <div className={ HeaderStyle.title }>Mit</div>
-            </div>
-
+            <Header />
+            
             <AppViewContent
                 socket={ socket }
                 conversation={ conversation }
