@@ -21,14 +21,6 @@ const sio = SocketIO(server, {
     cookie: false
 });
 
-if (process.env.NODE_ENV == 'production') {
-    const redis = require('socket.io-redis');
-
-    sio.adapter(
-        redis(process.env.REDIS_URL)
-    );
-}
-
 const lobby = new Lobby();
 
 sio.on('connection', socket => {
@@ -51,7 +43,7 @@ sio.on('connection', socket => {
 
     socket.on('global:lobby', () => {
         if (socket.conversation) {
-            return;
+            leave();
         }
 
         const friend = lobby.match();

@@ -21,8 +21,6 @@ export class ConversationController extends React.Component {
 
         this.handleSocketConversationLeave = () => {
             this.setDidFriendLeave(true);
-
-            this.leaveConversation();
         };
 
         this.handleSocketDisconnect = () => {
