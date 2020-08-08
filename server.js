@@ -20,10 +20,6 @@ app.use(compression({
 
 app.use(express.static('./dist/client'));
 
-app.get('/google509573d99740884f.html', (req, res) => {
-    res.send('google-site-verification: google509573d99740884f.html');
-});
-
 io.on('connection', socket => {
     function leave () {        
         const conversation = socket_conversation.get(socket);
