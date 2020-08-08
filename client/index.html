@@ -11,5 +11,17 @@
     <body>
         <div id="app"></div>
         <script async src="./main.jsx"></script>
+        <script async defer src="https://www.googletagmanager.com/gtag/js?id=UA-174922676-1"></script>
+        <script async defer>
+            function gtag () {
+                dataLayer.push(arguments);
+            }
+            
+            window.dataLayer = window.dataLayer || [];
+
+            gtag('js', new Date());
+            gtag('config', 'UA-174922676-1');
+        </script>
+
     </body>
 </html>
