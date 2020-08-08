@@ -23,6 +23,10 @@ export class ConversationController extends React.Component {
             this.setDidFriendLeave(true);
         };
 
+        this.handleSocketConversationDisconnect = () => {
+            this.setDidFriendDisconnect(true);
+        };
+
         this.handleSocketDisconnect = () => {
             this.setDidYouDisconnect(true);
         };
@@ -36,6 +40,7 @@ export class ConversationController extends React.Component {
             didYouLeave: false,
             didYouDisconnect: false,
             didFriendLeave: false,
+            didFriendDisconnect: false,
         };        
     };
     
@@ -49,6 +54,7 @@ export class ConversationController extends React.Component {
 
         this.socket.on('conversation:text-message', this.handleSocketTextMessage);
         this.socket.on('conversation:leave', this.handleSocketConversationLeave);
+        this.socket.on('conversation:disconnect', this.handleSocketConversationDisconnect);
     }
 
     componentWillUnmount () {
@@ -57,6 +63,7 @@ export class ConversationController extends React.Component {
 
         this.socket.off('conversation:text-message', this.handleSocketTextMessage);
         this.socket.off('conversation:leave', this.handleSocketConversationLeave);
+        this.socket.off('conversation:disconnect', this.handleSocketConversationDisconnect);
     }
 
     componentDidUpdate (previousProps, previousState) {
@@ -86,6 +93,12 @@ export class ConversationController extends React.Component {
     setDidFriendLeave (didFriendLeave) {
         this.setState({
             didFriendLeave
+        });
+    }
+
+    setDidFriendDisconnect (didFriendDisconnect) {
+        this.setState({
+            didFriendDisconnect
         });
     }
 
@@ -129,6 +142,7 @@ export class ConversationController extends React.Component {
             didYouLeave={ this.state.didYouLeave }
             didYouDisconnect={ this.state.didYouDisconnect }
             didFriendLeave={ this.state.didFriendLeave }
+            didFriendDisconnect={ this.state.didFriendDisconnect }
             actionEnterLobby={() => this.actionEnterLobby()}
             actionLeaveConversation={() => this.actionLeaveConversation()}
             actionSendTextMessage={message => this.actionSendTextMessage(message)} />;
@@ -140,6 +154,7 @@ export function ConversationView ({
     didYouLeave,
     didYouDisconnect,
     didFriendLeave,
+    didFriendDisconnect,
     actionEnterLobby,
     actionLeaveConversation,
     actionSendTextMessage,
@@ -149,9 +164,10 @@ export function ConversationView ({
             <div className={ ConversationStyle.main }>
                 { messages.length > 0 && <Messages messages={ messages } /> }
 
+                { didFriendLeave && <Alert>Your friend left this conversation.</Alert> }
+                { didFriendDisconnect && <Alert>Your friend is disconnected. Reconnecting...</Alert> }
                 { didYouLeave && <Alert>You left this conversation.</Alert> }
                 { didYouDisconnect && <Alert>You're disconnected. Reconnecting...</Alert> }
-                { didFriendLeave && <Alert>Your friend left this conversation.</Alert> }
             </div>
 
             <ConversationFooterController

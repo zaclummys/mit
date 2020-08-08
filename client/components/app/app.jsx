@@ -10,7 +10,6 @@ export class AppController extends React.Component {
     constructor () {
         super();
 
-
         this.state = {
             socket: null,
             conversation: false,
@@ -18,13 +17,11 @@ export class AppController extends React.Component {
     }
 
     componentDidMount () {
-        setTimeout(() => {
-            const socket = SocketIO();
+        const socket = SocketIO();
 
-            socket.once('connect', () => {
-                this.setSocket(socket);
-            });
-        }, 0);
+        socket.once('connect', () => {
+            this.setSocket(socket);
+        });
     }
 
     setSocket (socket) {

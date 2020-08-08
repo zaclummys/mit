@@ -70,12 +70,12 @@ export function ConversationFooterViewContent ({
     onLeaveConversationButtonClick,
 }) {
     if (alone) {
-        return <Button secondary full onClick={ onLobbyButtonClick }>GO TO LOBBY</Button>;
+        return <Button secondary full raised onClick={ onLobbyButtonClick }>GO TO LOBBY</Button>;
     }
     else {
         return (
             <div className={ ConversationFooterStyle.regular }>
-                <Button secondary onClick={ onLeaveConversationButtonClick }>LEAVE</Button>
+                <Button secondary raised onClick={ onLeaveConversationButtonClick }>LEAVE</Button>
 
                 <div className={ ConversationFooterStyle.form }>
                     <TextMessageFormController actionSendTextMessage={ actionSendTextMessage } />

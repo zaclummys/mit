@@ -1,8 +1,8 @@
 html {
-    font-family: Roboto, Helvetica Neue, sans-serif;
+    font-family: Roboto, Helvetica Neue, Arial, sans-serif;
     font-size: 14px;
 
-    background-color: #fefefe;
+    background-color: #f5f0f0;
 }
 
 input, button {
@@ -22,8 +22,9 @@ html, body {
 }
 
 :global #app {
+    background-color: #ffffff;
     height: 100%;
-    /* box-shadow: 0 0 1px 0 rgba(0, 0, 0, .12); */
+    box-shadow: 0 0 2px 0 rgba(0, 0, 0, .12);
 }
 
 :global #app {

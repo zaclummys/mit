@@ -8,12 +8,12 @@
 
 .left {
     color: white;
-    background-color: #5bcb15;
+    background-color: #5dc41c;
     align-self: flex-start;
 }
 
 .right {
     color: white;
-    background-color: #c20000;
+    background-color: #bc0606;
     align-self: flex-end;
 }
