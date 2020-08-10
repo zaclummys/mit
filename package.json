@@ -11,7 +11,9 @@
     "dependencies": {
         "compression": "^1.7.4",
         "express": "^4.17.1",
-        "helmet": "^4.0.0",
+        "imagemin": "^7.0.1",
+        "imagemin-jpegtran": "^7.0.0",
+        "imagemin-optipng": "^8.0.0",
         "socket.io": "^2.3.0",
         "uuid": "^7.0.0"
     },

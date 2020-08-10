@@ -1,7 +1,7 @@
 import React from 'react';
 import TextMessageStyle from './text-message.css';
 
-function computeMessageClassName ({ side }) {
+function computeClassName (side) {
     let className = TextMessageStyle.message;
 
     if (side == 'left') {
@@ -16,7 +16,7 @@ function computeMessageClassName ({ side }) {
 };
 
 export function TextMessage ({ side, text }) {
-    let className = computeMessageClassName({ side });
+    let className = computeClassName(side);
 
     return (
         <div className={ className }>

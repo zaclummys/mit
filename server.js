@@ -1,8 +1,10 @@
-const uuid = require('uuid');
 const SocketIO = require('socket.io');
 const express = require('express');
-const helmet = require('helmet');
 const compression = require('compression');
+
+const imagemin = require('imagemin');
+const imageminJPEGTran = require('imagemin-jpegtran');
+const imageminOptiPNG = require('imagemin-optipng');
 
 const Lobby = require('./lib/lobby');
 const SocketConversation = require('./lib/socket-conversation');
@@ -13,7 +15,6 @@ const io = SocketIO();
 const lobby = new Lobby();
 const socket_conversation = new SocketConversation();
 
-app.use(helmet());
 app.use(compression({
     level: 9
 }));
@@ -32,19 +33,19 @@ io.on('connection', socket => {
             socket.leave(conversation);
 
             // Clear conversation
-            socket_conversation.leave(socket);
+            socket_conversation.exit(socket);
         }
     }
 
-    socket.on('global:lobby', () => {
+    socket.on('global:lobby', async () => {
         if (socket_conversation.has(socket)) {
             leave();
         }
 
-        const friend = lobby.match();
+        const friend = await lobby.match();
         
         if (friend) {
-            const conversation = uuid.v4();
+            const conversation = await socket_conversation.create();
             
             socket_conversation.enter(socket, conversation);
             socket_conversation.enter(friend, conversation);
@@ -60,21 +61,44 @@ io.on('connection', socket => {
         }        
     });
 
-    socket.on('conversation:text-message', message => {        
+    socket.on('conversation:text-message', ({ text } = {}) => {        
         const conversation = socket_conversation.get(socket);
 
         if (conversation == null) {
             return;
         }
         
-        if (message == null) {
+        if (text == null) {
             return;
         }
-        
-        const text = message.text;
 
         socket.to(conversation).emit('conversation:text-message', {
             text,
+        });
+    });
+
+    socket.on('conversation:image-message', async ({ image } = {}) => {        
+        const conversation = socket_conversation.get(socket);
+        
+        if (conversation == null) {
+            return;
+        }
+    
+        if (image == null) {
+            return;
+        }
+
+        const output = await imagemin.buffer(image, {
+            plugins: [
+                imageminJPEGTran(),
+                imageminOptiPNG({
+                    optimizationLevel: 7
+                })
+            ]
+        });
+
+        socket.to(conversation).emit('conversation:image-message', {
+            image: output
         });
     });
 

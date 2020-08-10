@@ -3,6 +3,7 @@ import ConversationFooterStyle from './conversation-footer.css';
 
 import { Button } from '../button/button';
 import { TextMessageFormController } from '../text-message-form/text-message-form';
+import { ImageMessageFormController } from '../image-message-form/image-message-form';
 
 export class ConversationFooterController extends React.Component {
     constructor () {
@@ -25,6 +26,10 @@ export class ConversationFooterController extends React.Component {
         this.props.actionSendTextMessage(message);
     }
 
+    actionSendImageMessage (message) {
+        this.props.actionSendImageMessage(message);
+    }
+
     handleLeaveConversationButtonClick () {
         const confirmed = this.confirmLeaveConversation();
 
@@ -42,13 +47,15 @@ export class ConversationFooterController extends React.Component {
             alone={ this.props.alone }
             onLobbyButtonClick={() => this.handleLobbyButtonClick()}
             onLeaveConversationButtonClick={() => this.handleLeaveConversationButtonClick() }
-            actionSendTextMessage={message => this.actionSendTextMessage(message) } />;
+            actionSendTextMessage={message => this.actionSendTextMessage(message) }
+            actionSendImageMessage={message => this.actionSendImageMessage(message) } />;
     }
 }
 
 export function ConversationFooterView ({
     alone,
     actionSendTextMessage,
+    actionSendImageMessage,
     onLobbyButtonClick,
     onLeaveConversationButtonClick,
 }) {
@@ -57,6 +64,7 @@ export function ConversationFooterView ({
             <ConversationFooterViewContent
                 alone={ alone }
                 actionSendTextMessage={ actionSendTextMessage }
+                actionSendImageMessage={ actionSendImageMessage }
                 onLobbyButtonClick={ onLobbyButtonClick }
                 onLeaveConversationButtonClick={ onLeaveConversationButtonClick } />
         </div>
@@ -66,6 +74,7 @@ export function ConversationFooterView ({
 export function ConversationFooterViewContent ({
     alone,
     actionSendTextMessage,
+    actionSendImageMessage,
     onLobbyButtonClick,
     onLeaveConversationButtonClick,
 }) {
@@ -76,6 +85,9 @@ export function ConversationFooterViewContent ({
         return (
             <div className={ ConversationFooterStyle.regular }>
                 <Button secondary raised onClick={ onLeaveConversationButtonClick }>LEAVE</Button>
+
+                <ImageMessageFormController
+                    actionSendImageMessage={ actionSendImageMessage } />
 
                 <div className={ ConversationFooterStyle.form }>
                     <TextMessageFormController actionSendTextMessage={ actionSendTextMessage } />

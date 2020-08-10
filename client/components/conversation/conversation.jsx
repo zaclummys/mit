@@ -3,18 +3,31 @@ import ConversationStyle from './conversation.css';
 
 import { Alert } from '../alert/alert';
 import { Messages } from '../messages/messages';
+
 import { ConversationFooterController } from '../conversation-footer/conversation-footer';
 
 const LEFT = 'left';
 const RIGHT = 'right';
+
+const TEXT = 'text';
+const IMAGE = 'image';
 
 export class ConversationController extends React.Component {
     constructor () {
         super();
 
         this.handleSocketTextMessage = message => {
-            this.addTextMessage({
+            this.addMessage({
                 side: LEFT,
+                type: TEXT,
+                message: message,
+            });
+        };
+
+        this.handleSocketImageMessage = message => {
+            this.addMessage({
+                side: LEFT,
+                type: IMAGE,
                 message: message,
             });
         };
@@ -53,6 +66,7 @@ export class ConversationController extends React.Component {
         this.socket.on('disconnect', this.handleSocketDisconnect);
 
         this.socket.on('conversation:text-message', this.handleSocketTextMessage);
+        this.socket.on('conversation:image-message', this.handleSocketImageMessage);
         this.socket.on('conversation:leave', this.handleSocketConversationLeave);
         this.socket.on('conversation:disconnect', this.handleSocketConversationDisconnect);
     }
@@ -62,6 +76,7 @@ export class ConversationController extends React.Component {
         this.socket.off('disconnect', this.handleSocketDisconnect);
 
         this.socket.off('conversation:text-message', this.handleSocketTextMessage);
+        this.socket.off('conversation:image-message', this.handleSocketImageMessage);
         this.socket.off('conversation:leave', this.handleSocketConversationLeave);
         this.socket.off('conversation:disconnect', this.handleSocketConversationDisconnect);
     }
@@ -102,7 +117,7 @@ export class ConversationController extends React.Component {
         });
     }
 
-    addTextMessage (message) {
+    addMessage (message) {
         this.setMessagesWith(messages => ([
             ...messages,
             message,
@@ -110,22 +125,37 @@ export class ConversationController extends React.Component {
     }
 
     sendTextMessage (message) {
-        this.addTextMessage({
+        this.addMessage({
             side: RIGHT,
+            type: TEXT,
             message: message,
         });
 
-        this.socket.emit('conversation:text-message', message);
+        this.emitTextMessage(message);
     }
 
+    sendImageMessage (message) {
+        this.addMessage({
+            side: RIGHT,
+            type: IMAGE,
+            message: message,
+        });
+
+        this.emitImageMessage(message);
+    }
+    
     leaveConversation () {
         this.setDidYouLeave(true);
 
-        this.socket.emit('conversation:leave');
+        this.emitLeave();
     }
 
     actionSendTextMessage (message) {
         this.sendTextMessage(message);
+    }
+
+    actionSendImageMessage (message) {
+        this.sendImageMessage(message);
     }
 
     actionLeaveConversation () {
@@ -134,6 +164,18 @@ export class ConversationController extends React.Component {
 
     actionEnterLobby () {
         this.props.actionEnterLobby();
+    }
+
+    emitTextMessage (message) {
+        this.socket.emit('conversation:text-message', message);
+    }
+
+    emitImageMessage (message) {
+        this.socket.emit('conversation:image-message', message);
+    }
+
+    emitLeave () {
+        this.socket.emit('conversation:leave');
     }
 
     render () {
@@ -145,7 +187,8 @@ export class ConversationController extends React.Component {
             didFriendDisconnect={ this.state.didFriendDisconnect }
             actionEnterLobby={() => this.actionEnterLobby()}
             actionLeaveConversation={() => this.actionLeaveConversation()}
-            actionSendTextMessage={message => this.actionSendTextMessage(message)} />;
+            actionSendTextMessage={message => this.actionSendTextMessage(message)}
+            actionSendImageMessage={message => this.actionSendImageMessage(message)} />;
     }
 }
 
@@ -158,12 +201,14 @@ export function ConversationView ({
     actionEnterLobby,
     actionLeaveConversation,
     actionSendTextMessage,
+    actionSendImageMessage,
 }) {
     return (
         <div>
             <div className={ ConversationStyle.main }>
                 { messages.length > 0 && <Messages messages={ messages } /> }
 
+                {/* Todo: IMPLEMENT TOAST */}
                 { didFriendLeave && <Alert>Your friend left this conversation.</Alert> }
                 { didFriendDisconnect && <Alert>Your friend is disconnected. Reconnecting...</Alert> }
                 { didYouLeave && <Alert>You left this conversation.</Alert> }
@@ -174,7 +219,8 @@ export function ConversationView ({
                 alone={ didYouLeave || didFriendLeave }
                 actionEnterLobby={ actionEnterLobby }
                 actionLeaveConversation={ actionLeaveConversation }
-                actionSendTextMessage={ actionSendTextMessage } />
+                actionSendTextMessage={ actionSendTextMessage }
+                actionSendImageMessage={ actionSendImageMessage } />
         </div>
     );
 }
