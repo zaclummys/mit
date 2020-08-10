@@ -92,7 +92,7 @@ io.on('connection', socket => {
             plugins: [
                 imageminJPEGTran(),
                 imageminOptiPNG({
-                    optimizationLevel: 7
+                    optimizationLevel: 0
                 })
             ]
         });
