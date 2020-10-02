@@ -30,20 +30,19 @@ export class App extends React.Component {
             socket.once('reconnect_failed', () => reject(socket));
         });
 
-        socket.then(
-            socket => {
+        socket
+            .then(socket => {
                 this.setState({
-                    status: SocketStatus.CONNECTED,
                     socket: socket,
+                    status: SocketStatus.CONNECTED,
                 });
-            },
-
-            () => {
+            })
+            .catch(() => {
                 this.setState({
-                    status: SocketStatus.ERROR
+                    socket: null,
+                    status: SocketStatus.ERROR,
                 });
-            },
-        );
+            });
 
         this.setState({
             status: SocketStatus.CONNECTING
@@ -60,14 +59,9 @@ export class App extends React.Component {
 }
 
 function AppView ({ status, socket }) {
-    switch (status) {
-        case SocketStatus.CONNECTED:
-            return (
-                <Conversation
-                    socket={ socket } />
-            );
-        
-        default:
-            return <Splash status={ status } />;
+    if (status == SocketStatus.CONNECTED) {
+        return <Conversation socket={ socket } />;
     }
+        
+    return <Splash status={ status } />;
 }
