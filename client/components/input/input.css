@@ -1,14 +1,19 @@
-.input {
-    width: 100%;
-    height: 36px;
-    padding: 0 8px;
-    margin: 0 8px;
-    background-color: #fefefe;
-    min-width: 0;
-    border: 2px solid rgba(0, 0, 0, .45);
+.container {
+    display: flex;
+    flex-direction: row;
+
+    color: #000;
+    background: #ebebeb;
+
     border-radius: 2px;
+
+    width: 100%;
+    height: 40px;
 }
 
-.input:focus {
-    border: 2px solid #ec1313;
+.input {
+    width: 100%;
+    height: 100%;
+
+    padding: 0 8px;
 }

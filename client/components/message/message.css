@@ -1,0 +1,25 @@
+.message {
+    display: block;
+
+    margin-top: 4px;
+    padding: 8px;
+    
+    border-radius: 2px;
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .12);
+}
+
+.message span {
+    word-break: break-all;
+}
+
+.left {
+    color: #000000;
+    background-color: #e5e5e5;
+    align-self: flex-start;
+}
+
+.right {
+    color: #ffffff;
+    background-color: #ff9900;
+    align-self: flex-end;
+}

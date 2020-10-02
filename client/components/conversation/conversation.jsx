@@ -1,59 +1,47 @@
 import React from 'react';
 import ConversationStyle from './conversation.css';
 
-import { Alert } from '../alert/alert';
+import { ConversationStatus, MessageSide } from '../../constants';
+
+import { Info } from '../info/info';
+import { Button } from '../button/button';
 import { Messages } from '../messages/messages';
+import { MessageForm } from '../message-form/message-form';
 
-import { ConversationFooterController } from '../conversation-footer/conversation-footer';
-
-const LEFT = 'left';
-const RIGHT = 'right';
-
-const TEXT = 'text';
-const IMAGE = 'image';
-
-export class ConversationController extends React.Component {
+export class Conversation extends React.Component {
     constructor () {
         super();
 
-        this.handleSocketTextMessage = message => {
+        this.handleConversationMatch = () => {
+            this.setState({
+                status: ConversationStatus.IN,
+
+                messages: [],
+                didYouLeave: false,
+                didFriendLeave: false,
+            });
+        };
+
+        this.handleConversationMessage = message => {
             this.addMessage({
-                side: LEFT,
-                type: TEXT,
+                side: MessageSide.LEFT,
                 message: message,
             });
         };
 
-        this.handleSocketImageMessage = message => {
-            this.addMessage({
-                side: LEFT,
-                type: IMAGE,
-                message: message,
+        this.handleConversationLeave = () => {
+            this.setState({
+                status: ConversationStatus.OUT,
+                didFriendLeave: true,
             });
         };
-
-        this.handleSocketConversationLeave = () => {
-            this.setDidFriendLeave(true);
-        };
-
-        this.handleSocketConversationDisconnect = () => {
-            this.setDidFriendDisconnect(true);
-        };
-
-        this.handleSocketDisconnect = () => {
-            this.setDidYouDisconnect(true);
-        };
-
-        this.handleSocketConnect = () => {
-            this.setDidYouDisconnect(false);
-        }
 
         this.state = {
+            status: ConversationStatus.UNINITIALIZED,
+            
             messages: [],
             didYouLeave: false,
-            didYouDisconnect: false,
             didFriendLeave: false,
-            didFriendDisconnect: false,
         };        
     };
     
@@ -62,27 +50,19 @@ export class ConversationController extends React.Component {
     }       
 
     componentDidMount () {
-        this.socket.on('connect', this.handleSocketConnect);
-        this.socket.on('disconnect', this.handleSocketDisconnect);
-
-        this.socket.on('conversation:text-message', this.handleSocketTextMessage);
-        this.socket.on('conversation:image-message', this.handleSocketImageMessage);
-        this.socket.on('conversation:leave', this.handleSocketConversationLeave);
-        this.socket.on('conversation:disconnect', this.handleSocketConversationDisconnect);
+        this.socket.on('conversation:match', this.handleConversationMatch);
+        this.socket.on('conversation:message', this.handleConversationMessage);
+        this.socket.on('conversation:leave', this.handleConversationLeave);
     }
 
     componentWillUnmount () {
-        this.socket.off('connect', this.handleSocketConnect);
-        this.socket.off('disconnect', this.handleSocketDisconnect);
-
-        this.socket.off('conversation:text-message', this.handleSocketTextMessage);
-        this.socket.off('conversation:image-message', this.handleSocketImageMessage);
-        this.socket.off('conversation:leave', this.handleSocketConversationLeave);
-        this.socket.off('conversation:disconnect', this.handleSocketConversationDisconnect);
+        this.socket.off('conversation:match', this.handleConversationMatch);
+        this.socket.off('conversation:message', this.handleConversationMessage);
+        this.socket.off('conversation:leave', this.handleConversationLeave);
     }
 
-    componentDidUpdate (previousProps, previousState) {
-        if (this.state.messages.length != previousState.messages.length) {
+    componentDidUpdate (_, previousState) {
+        if (this.state.messages.length > previousState.messages.length) {
             document.documentElement.scrollTop = document.documentElement.scrollHeight;
         }
     }
@@ -93,30 +73,6 @@ export class ConversationController extends React.Component {
         }));
     }
 
-    setDidYouLeave (didYouLeave) {
-        this.setState({
-            didYouLeave
-        });
-    }
-
-    setDidYouDisconnect (didYouDisconnect) {
-        this.setState({
-            didYouDisconnect
-        });
-    }
-
-    setDidFriendLeave (didFriendLeave) {
-        this.setState({
-            didFriendLeave
-        });
-    }
-
-    setDidFriendDisconnect (didFriendDisconnect) {
-        this.setState({
-            didFriendDisconnect
-        });
-    }
-
     addMessage (message) {
         this.setMessagesWith(messages => ([
             ...messages,
@@ -124,103 +80,108 @@ export class ConversationController extends React.Component {
         ]));
     }
 
-    sendTextMessage (message) {
+    sendMessage (message) {
         this.addMessage({
-            side: RIGHT,
-            type: TEXT,
+            side: MessageSide.RIGHT,
             message: message,
         });
 
-        this.emitTextMessage(message);
+        this.socket.emit('conversation:message', message);
     }
 
-    sendImageMessage (message) {
-        this.addMessage({
-            side: RIGHT,
-            type: IMAGE,
-            message: message,
+    startConversation () {
+        this.setState({
+            status: ConversationStatus.WAITING
         });
 
-        this.emitImageMessage(message);
-    }
-    
-    leaveConversation () {
-        this.setDidYouLeave(true);
-
-        this.emitLeave();
+        this.socket.emit('conversation:start');
     }
 
-    actionSendTextMessage (message) {
-        this.sendTextMessage(message);
-    }
+    stopConversation () {
+        this.setState({
+            status: ConversationStatus.OUT,
+            didYouLeave: true,
+        });
 
-    actionSendImageMessage (message) {
-        this.sendImageMessage(message);
-    }
-
-    actionLeaveConversation () {
-        this.leaveConversation();
-    }
-
-    actionEnterLobby () {
-        this.props.actionEnterLobby();
-    }
-
-    emitTextMessage (message) {
-        this.socket.emit('conversation:text-message', message);
-    }
-
-    emitImageMessage (message) {
-        this.socket.emit('conversation:image-message', message);
-    }
-
-    emitLeave () {
         this.socket.emit('conversation:leave');
     }
 
-    render () {
-        return <ConversationView
-            messages={ this.state.messages }
-            didYouLeave={ this.state.didYouLeave }
-            didYouDisconnect={ this.state.didYouDisconnect }
-            didFriendLeave={ this.state.didFriendLeave }
-            didFriendDisconnect={ this.state.didFriendDisconnect }
-            actionEnterLobby={() => this.actionEnterLobby()}
-            actionLeaveConversation={() => this.actionLeaveConversation()}
-            actionSendTextMessage={message => this.actionSendTextMessage(message)}
-            actionSendImageMessage={message => this.actionSendImageMessage(message)} />;
+    renderHeaderPrimaryActionView () {
+        switch (this.state.status) {
+            case ConversationStatus.OUT:
+            case ConversationStatus.UNINITIALIZED:
+                return <Button onClick={() => this.startConversation()}>START</Button>;
+            
+            case ConversationStatus.IN:
+                return <Button onClick={() => this.stopConversation()}>STOP</Button>;
+    
+            case ConversationStatus.WAITING:
+                return <Button disabled>WAITING...</Button>;
+        }
     }
-}
 
-export function ConversationView ({
-    messages,
-    didYouLeave,
-    didYouDisconnect,
-    didFriendLeave,
-    didFriendDisconnect,
-    actionEnterLobby,
-    actionLeaveConversation,
-    actionSendTextMessage,
-    actionSendImageMessage,
-}) {
-    return (
-        <div>
-            <div className={ ConversationStyle.main }>
-                { messages.length > 0 && <Messages messages={ messages } /> }
+    renderMainView () {
+        return (
+            <main className={ ConversationStyle.main }>
+                <div className={ ConversationStyle.content }>
+                    { this.renderMainContentView() }
+                </div>
+            </main>
+        );
+    }
 
-                {/* Todo: IMPLEMENT TOAST */}
-                { didFriendLeave && <Alert>Your friend left this conversation.</Alert> }
-                { didFriendDisconnect && <Alert>Your friend is disconnected. Reconnecting...</Alert> }
-                { didYouLeave && <Alert>You left this conversation.</Alert> }
-                { didYouDisconnect && <Alert>You're disconnected. Reconnecting...</Alert> }
+    renderMainContentView () {
+        switch (this.state.status) {
+            case ConversationStatus.UNINITIALIZED:
+                return (
+                    <Info>Welcome! Press <b>start</b> to meet a friend!</Info>
+                );
+
+            case ConversationStatus.WAITING:
+                return (
+                    <Info>Waiting for a friend...</Info>
+                );
+
+            default:
+                return (
+                    <div>
+                        { this.state.messages.length > 0 && <Messages messages={ this.state.messages } /> }
+            
+                        { this.state.didFriendLeave && <Info>Your friend left this conversation.</Info> }
+                        { this.state.didYouLeave && <Info>You left this conversation.</Info> }
+                    </div>
+                );
+        }
+    }
+
+    renderFooterView () {
+        if (this.state.status == ConversationStatus.IN) {
+            return (
+                <footer className={ ConversationStyle.footer }>
+                    <div className={ ConversationStyle.content }>
+                        <MessageForm
+                            actionSendMessage={message => this.sendMessage(message)} />
+                    </div>
+                </footer>
+            );
+        }
+
+        return null;
+    }
+
+    render () {
+        return (
+            <div>
+                <header className={ ConversationStyle.header }>
+                    <div className={ ConversationStyle.content }>
+                        <div className={ ConversationStyle.title }>Mit</div>
+                        { this.renderHeaderPrimaryActionView() }
+                    </div>
+                </header>
+    
+                { this.renderMainView() }    
+                { this.renderFooterView() }
             </div>
-
-            <ConversationFooterController
-                alone={ didYouLeave || didFriendLeave }
-                actionEnterLobby={ actionEnterLobby }
-                actionLeaveConversation={ actionLeaveConversation }
-                actionSendTextMessage={ actionSendTextMessage }
-                actionSendImageMessage={ actionSendImageMessage } />
-        </div>
-    );
+        );
+    }
 }

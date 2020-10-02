@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { AppController } from './components/app/app';
+import { App } from './components/app/app';
 
 import 'normalize.css';
 import './main.css';
 
 ReactDOM.render(
     <React.StrictMode>
-        <AppController />
+        <App />
     </React.StrictMode>,
     document.getElementById("app"),
 );

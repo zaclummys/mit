@@ -1,8 +1,45 @@
-.main {
-    margin-top: 16px;
-    margin-bottom: 52px;
+.header {        
+    background-color: #ffffff;    
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, .12);
 }
 
-.alone {
-    text-align: center;
+.header .content {        
+    display: flex;
+    align-items: center;
+    
+    height: 56px;
+    padding: 0px 16px;
+}
+
+.header .title {
+    flex: auto;
+
+    font-size: 18px;
+    font-weight: 500;
+}
+
+.main {
+    margin-top: 16px;
+    margin-bottom: 56px;
+}
+
+.footer {
+    position: fixed;    
+
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.footer .content {
+    padding: 8px;
+}
+
+.header .content,
+.main .content,
+.footer .content {
+    max-width: 768px;
+    margin-left: auto;
+    margin-right: auto;
 }
